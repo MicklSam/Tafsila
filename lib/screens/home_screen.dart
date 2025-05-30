@@ -156,21 +156,25 @@ class _HomeScreenState extends State<HomeScreen> {
               label: 'Sizes',
             ),
             BottomNavigationBarItem(
-              icon: GestureDetector(
-                onTap: () {
-                  // Handle scan action
-                },
-                child: Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF7B68EE),
-                    borderRadius: BorderRadius.circular(30),
-                  ),
-                  child: Image.asset(
-                    'lib/assets/images/scan.png',
-                    width: 24,
-                    height: 24,
-                    color: Colors.white,
+              icon: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () {
+                    // Handle scan action
+                  },
+                  borderRadius: BorderRadius.circular(30),
+                  child: Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF7B68EE),
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: Image.asset(
+                      'lib/assets/images/scan.png',
+                      width: 24,
+                      height: 24,
+                      color: Colors.white,
+                    ),
                   ),
                 ),
               ),
@@ -257,21 +261,25 @@ class _HomeScreenState extends State<HomeScreen> {
                 if (!showArrow)
                   Align(
                     alignment: Alignment.centerRight,
-                    child: GestureDetector(
-                      onTap: () {
-                        // Handle scan action
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.3),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Image.asset(
-                          'lib/assets/images/scan (1).png',
-                          width: 24,
-                          height: 24,
-                          color: Colors.white,
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () {
+                          // Handle scan action
+                        },
+                        borderRadius: BorderRadius.circular(12),
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.3),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Image.asset(
+                            'lib/assets/images/scan (1).png',
+                            width: 24,
+                            height: 24,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ),
@@ -279,17 +287,26 @@ class _HomeScreenState extends State<HomeScreen> {
                 if (showArrow)
                   Align(
                     alignment: Alignment.centerRight,
-                    child: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(0.3),
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () {
+                          // Handle arrow action
+                        },
                         borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Image.asset(
-                        'lib/assets/images/arrow.png',
-                        width: 24,
-                        height: 24,
-                        color: Colors.white,
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withOpacity(0.3),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Image.asset(
+                            'lib/assets/images/arrow.png',
+                            width: 24,
+                            height: 24,
+                            color: Colors.white,
+                          ),
+                        ),
                       ),
                     ),
                   ),
