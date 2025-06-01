@@ -89,7 +89,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         icon: 'maximize.png',
                         showArrow: true,
                         onTap: () {
-                          // Handle measurements
+                          Navigator.pushReplacementNamed(
+                            context,
+                            '/measurements',
+                          );
                         },
                       ),
                       const SizedBox(height: 16),
@@ -129,6 +132,9 @@ class _HomeScreenState extends State<HomeScreen> {
             setState(() {
               _selectedIndex = index;
             });
+            if (index == 1) {
+              Navigator.pushReplacementNamed(context, '/measurements');
+            }
           },
           type: BottomNavigationBarType.fixed,
           backgroundColor: Colors.white,
