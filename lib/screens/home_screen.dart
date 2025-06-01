@@ -104,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         icon: 'history.png',
                         showArrow: true,
                         onTap: () {
-                          // Handle history
+                          Navigator.pushReplacementNamed(context, '/history');
                         },
                       ),
                     ],
@@ -134,6 +134,8 @@ class _HomeScreenState extends State<HomeScreen> {
             });
             if (index == 1) {
               Navigator.pushReplacementNamed(context, '/measurements');
+            } else if (index == 3) {
+              Navigator.pushReplacementNamed(context, '/history');
             }
           },
           type: BottomNavigationBarType.fixed,
