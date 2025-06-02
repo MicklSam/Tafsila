@@ -3,6 +3,9 @@ import 'screens/splash_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/measurements_screen.dart';
 import 'screens/history_screen.dart';
+import 'screens/profile_screen.dart';
+import 'screens/signin_screen.dart';
+import 'screens/signup_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -25,6 +28,9 @@ class MyApp extends StatelessWidget {
         '/home': (context) => const HomeScreen(),
         '/measurements': (context) => const MeasurementsScreen(),
         '/history': (context) => const HistoryScreen(),
+        '/profile': (context) => const ProfileScreen(),
+        '/signin': (context) => const SignInScreen(),
+        '/signup': (context) => const SignUpScreen(),
       },
     );
   }

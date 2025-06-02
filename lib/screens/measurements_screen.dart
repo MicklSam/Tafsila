@@ -160,6 +160,10 @@ class _MeasurementsScreenState extends State<MeasurementsScreen> {
             });
             if (index == 0) {
               Navigator.pushReplacementNamed(context, '/home');
+            } else if (index == 4) {
+              Navigator.pushReplacementNamed(context, '/profile');
+            } else if (index == 3) {
+              Navigator.pushReplacementNamed(context, '/history');
             }
           },
           type: BottomNavigationBarType.fixed,

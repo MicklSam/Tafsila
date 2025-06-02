@@ -23,32 +23,40 @@ class _HomeScreenState extends State<HomeScreen> {
               Row(
                 children: [
                   // Profile image and welcome text
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 25,
-                        backgroundImage: AssetImage(
-                          'lib/assets/images/kids-playing-soccer-stockcake.jpg',
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pushReplacementNamed(context, '/profile');
+                    },
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 25,
+                          backgroundImage: AssetImage(
+                            'lib/assets/images/kids-playing-soccer-stockcake.jpg',
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 12),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: const [
-                          Text(
-                            'Welcome Back',
-                            style: TextStyle(color: Colors.grey, fontSize: 14),
-                          ),
-                          Text(
-                            'Mohammed Ibrah..',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
+                        const SizedBox(width: 12),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: const [
+                            Text(
+                              'Welcome Back',
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontSize: 14,
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
+                            Text(
+                              'Mohammed Ibrah..',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                   const Spacer(),
                   // Settings button
@@ -136,6 +144,8 @@ class _HomeScreenState extends State<HomeScreen> {
               Navigator.pushReplacementNamed(context, '/measurements');
             } else if (index == 3) {
               Navigator.pushReplacementNamed(context, '/history');
+            } else if (index == 4) {
+              Navigator.pushReplacementNamed(context, '/profile');
             }
           },
           type: BottomNavigationBarType.fixed,

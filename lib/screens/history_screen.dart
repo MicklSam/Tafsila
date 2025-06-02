@@ -90,6 +90,8 @@ class _HistoryScreenState extends State<HistoryScreen> {
               Navigator.pushReplacementNamed(context, '/home');
             } else if (index == 1) {
               Navigator.pushReplacementNamed(context, '/measurements');
+            } else if (index == 4) {
+              Navigator.pushReplacementNamed(context, '/profile');
             }
           },
           type: BottomNavigationBarType.fixed,
