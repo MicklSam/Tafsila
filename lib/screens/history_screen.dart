@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import '../utils/user_data.dart';
+import 'camera.dart';
+import '../main.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({Key? key}) : super(key: key);
@@ -14,6 +17,23 @@ class _HistoryScreenState extends State<HistoryScreen> {
     1: false,
     2: false,
   }; // Track expanded state of entries
+
+  void _navigateToCamera() {
+    final height = UserData.userHeight ?? 170.0;
+    final weight = UserData.userWeight ?? 70.0;
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder:
+            (context) => CameraScreen(
+              camera: cameras.first,
+              userHeight: height,
+              userWeight: weight,
+            ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -124,7 +144,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                 color: Colors.transparent,
                 child: InkWell(
                   onTap: () {
-                    // Handle scan action
+                    _navigateToCamera();
                   },
                   borderRadius: BorderRadius.circular(30),
                   child: Container(

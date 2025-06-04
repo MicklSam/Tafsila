@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import '../utils/user_data.dart';
+import 'camera.dart';
+import '../main.dart';
 
 class MeasurementsScreen extends StatefulWidget {
   const MeasurementsScreen({Key? key}) : super(key: key);
@@ -8,8 +12,109 @@ class MeasurementsScreen extends StatefulWidget {
 }
 
 class _MeasurementsScreenState extends State<MeasurementsScreen> {
-  int _selectedIndex = 1; // For the bottom navigation bar
-  bool _showOptions = false;
+  int _selectedIndex = 1;
+
+  void _showOptionsMenu(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder:
+          (context) => Container(
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.copy, color: Color(0xFF7B68EE)),
+                  title: const Text('Copy Measurements'),
+                  onTap: () {
+                    _copyMeasurements();
+                    Navigator.pop(context);
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.delete_outline, color: Colors.red),
+                  title: const Text('Clear Measurements'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _clearMeasurements();
+                  },
+                ),
+              ],
+            ),
+          ),
+    );
+  }
+
+  void _copyMeasurements() {
+    if (UserData.measurements != null) {
+      final measurementsText = '''
+Body Measurements:
+Bust: ${UserData.measurements!['chestCircumference']?.toStringAsFixed(1)} cm
+Waist: ${UserData.measurements!['waistCircumference']?.toStringAsFixed(1)} cm
+Hips: ${UserData.measurements!['hipCircumference']?.toStringAsFixed(1)} cm
+Shoulders: ${UserData.measurements!['shoulderWidth']?.toStringAsFixed(1)} cm
+Arm Length: ${UserData.measurements!['armLength']?.toStringAsFixed(1)} cm
+Inseam: ${UserData.measurements!['inseam']?.toStringAsFixed(1)} cm
+
+Recommended Sizes:
+T-shirt: ${UserData.clothingSizes?['t_shirt']?['size']} (${UserData.clothingSizes?['t_shirt']?['fit']})
+Shirt: ${UserData.clothingSizes?['shirt']?['size']} (${UserData.clothingSizes?['shirt']?['fit']})
+Jacket: ${UserData.clothingSizes?['jacket']?['size']} (${UserData.clothingSizes?['jacket']?['fit']})
+Pants: ${UserData.clothingSizes?['pants']?['size']} (${UserData.clothingSizes?['pants']?['fit']})
+''';
+      Clipboard.setData(ClipboardData(text: measurementsText));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Measurements copied to clipboard')),
+      );
+    }
+  }
+
+  void _clearMeasurements() {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Clear Measurements'),
+            content: const Text(
+              'Are you sure you want to clear all measurements?',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () {
+                  UserData.clearMeasurements();
+                  setState(() {});
+                  Navigator.pop(context);
+                },
+                child: const Text('Clear'),
+              ),
+            ],
+          ),
+    );
+  }
+
+  void _navigateToCamera() {
+    final height = UserData.userHeight ?? 170.0;
+    final weight = UserData.userWeight ?? 70.0;
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder:
+            (context) => CameraScreen(
+              camera: cameras.first,
+              userHeight: height,
+              userWeight: weight,
+            ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,106 +144,104 @@ class _MeasurementsScreenState extends State<MeasurementsScreen> {
               width: 24,
               height: 24,
             ),
-            onPressed: () {
-              // Handle scan action
-            },
+            onPressed: _navigateToCamera,
           ),
+          if (UserData.measurements != null)
+            IconButton(
+              icon: const Icon(Icons.more_vert, color: Colors.black),
+              onPressed: () => _showOptionsMenu(context),
+            ),
         ],
       ),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Card(
-                elevation: 2,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text(
-                            'Key Measurements',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Row(
-                            children: [
-                              PopupMenuButton(
-                                icon: const Icon(Icons.more_vert),
-                                onSelected: (value) {
-                                  // Handle menu item selection
-                                },
-                                itemBuilder:
-                                    (context) => [
-                                      const PopupMenuItem(
-                                        value: 'copy',
-                                        child: Row(
-                                          children: [
-                                            Icon(Icons.copy, size: 20),
-                                            SizedBox(width: 8),
-                                            Text('Copy'),
-                                          ],
-                                        ),
-                                      ),
-                                      const PopupMenuItem(
-                                        value: 'delete',
-                                        child: Row(
-                                          children: [
-                                            Icon(
-                                              Icons.delete_outline,
-                                              size: 20,
-                                            ),
-                                            SizedBox(width: 8),
-                                            Text('Delete'),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                              ),
-                            ],
-                          ),
-                        ],
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (UserData.measurements == null)
+              Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const SizedBox(height: 100),
+                    Image.asset(
+                      'lib/assets/images/measurement.png',
+                      width: 200,
+                      height: 200,
+                    ),
+                    const SizedBox(height: 24),
+                    const Text(
+                      'No measurements yet',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
                       ),
-                      const Text(
-                        'Last Updated: May 28, 2023',
-                        style: TextStyle(fontSize: 12, color: Colors.grey),
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      'Take your first measurement',
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                    const SizedBox(height: 24),
+                    ElevatedButton(
+                      onPressed: _navigateToCamera,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF7B68EE),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 32,
+                          vertical: 16,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
                       ),
-                      const SizedBox(height: 16),
-                      _buildMeasurementRow('Bust', '[XX cm/in]'),
-                      _buildMeasurementRow('Waist', '[XX cm/in]'),
-                      _buildMeasurementRow('Hips', '[XX cm/in]'),
-                      _buildMeasurementRow('Inseam', '[XX cm/in]'),
-                      _buildMeasurementRow('Shoulders', '[XX cm/in]'),
-                      _buildMeasurementRow('Arm Length', '[XX cm/in]'),
-                    ],
-                  ),
+                      child: const Text(
+                        'Scan Your Size',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-              const SizedBox(height: 24),
+              )
+            else ...[
               const Text(
-                'Results',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-              ),
-              const Text(
-                'Recommended Sizes',
-                style: TextStyle(fontSize: 12, color: Colors.grey),
+                'Body Measurements',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16),
-              _buildSizeCard('Fit scan size', 'M'),
-              const SizedBox(height: 8),
-              _buildSizeCard('relaxed fit', 'L'),
+              _buildMeasurementCard([
+                _buildMeasurement(
+                  'Bust',
+                  UserData.measurements!['chestCircumference'],
+                ),
+                _buildMeasurement(
+                  'Waist',
+                  UserData.measurements!['waistCircumference'],
+                ),
+                _buildMeasurement(
+                  'Hips',
+                  UserData.measurements!['hipCircumference'],
+                ),
+                _buildMeasurement(
+                  'Shoulders',
+                  UserData.measurements!['shoulderWidth'],
+                ),
+                _buildMeasurement(
+                  'Arm Length',
+                  UserData.measurements!['armLength'],
+                ),
+                _buildMeasurement('Inseam', UserData.measurements!['inseam']),
+              ]),
+              const SizedBox(height: 24),
+              const Text(
+                'Recommended Sizes',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 16),
+              _buildSizesGrid(),
+              const SizedBox(height: 16), // Add bottom padding
             ],
-          ),
+          ],
         ),
       ),
       bottomNavigationBar: Container(
@@ -160,10 +263,12 @@ class _MeasurementsScreenState extends State<MeasurementsScreen> {
             });
             if (index == 0) {
               Navigator.pushReplacementNamed(context, '/home');
-            } else if (index == 4) {
-              Navigator.pushReplacementNamed(context, '/profile');
+            } else if (index == 2) {
+              _navigateToCamera();
             } else if (index == 3) {
               Navigator.pushReplacementNamed(context, '/history');
+            } else if (index == 4) {
+              Navigator.pushReplacementNamed(context, '/profile');
             }
           },
           type: BottomNavigationBarType.fixed,
@@ -196,7 +301,7 @@ class _MeasurementsScreenState extends State<MeasurementsScreen> {
                 color: Colors.transparent,
                 child: InkWell(
                   onTap: () {
-                    // Handle scan action
+                    _navigateToCamera();
                   },
                   borderRadius: BorderRadius.circular(30),
                   child: Container(
@@ -242,55 +347,120 @@ class _MeasurementsScreenState extends State<MeasurementsScreen> {
     );
   }
 
-  Widget _buildMeasurementRow(String label, String value) {
+  Widget _buildMeasurementCard(List<Widget> measurements) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Column(children: measurements),
+    );
+  }
+
+  Widget _buildMeasurement(String label, double? value) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
             label,
-            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+            style: const TextStyle(fontSize: 16, color: Colors.black87),
           ),
-          Text(value, style: const TextStyle(fontSize: 14, color: Colors.grey)),
+          Text(
+            value != null ? '${value.toStringAsFixed(1)} cm' : '-- cm',
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildSizeCard(String label, String size) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  Widget _buildSizesGrid() {
+    if (UserData.clothingSizes == null) return const SizedBox();
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final cardWidth = (constraints.maxWidth - 16) / 2;
+        final cardHeight = 120.0;
+
+        return Wrap(
+          spacing: 16,
+          runSpacing: 16,
           children: [
-            Text(
-              label,
-              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+            _buildSizeCard(
+              'T-shirt',
+              UserData.clothingSizes!['t_shirt'],
+              cardWidth,
+              cardHeight,
             ),
-            Container(
-              width: 32,
-              height: 32,
-              decoration: BoxDecoration(
-                color: const Color(0xFF7B68EE),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Center(
-                child: Text(
-                  size,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ),
+            _buildSizeCard(
+              'Shirt',
+              UserData.clothingSizes!['shirt'],
+              cardWidth,
+              cardHeight,
+            ),
+            _buildSizeCard(
+              'Jacket',
+              UserData.clothingSizes!['jacket'],
+              cardWidth,
+              cardHeight,
+            ),
+            _buildSizeCard(
+              'Pants',
+              UserData.clothingSizes!['pants'],
+              cardWidth,
+              cardHeight,
             ),
           ],
-        ),
+        );
+      },
+    );
+  }
+
+  Widget _buildSizeCard(
+    String type,
+    Map<String, String>? sizeInfo,
+    double width,
+    double height,
+  ) {
+    return Container(
+      width: width,
+      height: height,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 10,
+            offset: const Offset(0, 5),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(type, style: const TextStyle(fontSize: 16, color: Colors.grey)),
+          const Spacer(),
+          Text(
+            sizeInfo?['size'] ?? '--',
+            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          ),
+          Text(
+            sizeInfo?['fit'] ?? '--',
+            style: const TextStyle(fontSize: 14, color: Colors.grey),
+          ),
+        ],
       ),
     );
   }

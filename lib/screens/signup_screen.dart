@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'signin_screen.dart';
 import '../widgets/signup_success_sheet.dart';
+import '../utils/user_data.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);
@@ -13,6 +14,15 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
+  final TextEditingController _heightController = TextEditingController();
+  final TextEditingController _weightController = TextEditingController();
+
+  @override
+  void dispose() {
+    _heightController.dispose();
+    _weightController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -87,10 +97,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
               ),
               const SizedBox(height: 16),
               // Height field with Cm
-              _buildTextFieldWithUnit(hint: 'enter your height', unit: 'Cm'),
+              _buildTextFieldWithUnit(
+                hint: 'enter your height',
+                unit: 'Cm',
+                controller: _heightController,
+              ),
               const SizedBox(height: 16),
               // Weight field with Kg
-              _buildTextFieldWithUnit(hint: 'enter your weight', unit: 'Kg'),
+              _buildTextFieldWithUnit(
+                hint: 'enter your weight',
+                unit: 'Kg',
+                controller: _weightController,
+              ),
               const SizedBox(height: 32),
               // Sign up button
               SizedBox(
@@ -98,6 +116,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 height: 56,
                 child: ElevatedButton(
                   onPressed: () {
+                    // Store height and weight in UserData
+                    UserData.userHeight = double.tryParse(
+                      _heightController.text,
+                    );
+                    UserData.userWeight = double.tryParse(
+                      _weightController.text,
+                    );
+
                     // Show success bottom sheet
                     showModalBottomSheet(
                       context: context,
@@ -211,7 +237,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  Widget _buildTextFieldWithUnit({required String hint, required String unit}) {
+  Widget _buildTextFieldWithUnit({
+    required String hint,
+    required String unit,
+    required TextEditingController controller,
+  }) {
     return Container(
       decoration: BoxDecoration(
         color: const Color(0xFFF8F8FF),
@@ -221,6 +251,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
         children: [
           Expanded(
             child: TextField(
+              controller: controller,
+              keyboardType: TextInputType.number,
               decoration: InputDecoration(
                 hintText: hint,
                 hintStyle: const TextStyle(color: Colors.grey, fontSize: 16),

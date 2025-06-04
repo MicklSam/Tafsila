@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'camera.dart';
+import '../main.dart';
+import '../utils/user_data.dart';
+import 'signup_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -9,6 +13,24 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
+
+  void _navigateToCamera() {
+    // Use height and weight from UserData or default values if not set
+    final height = UserData.userHeight ?? 170.0;
+    final weight = UserData.userWeight ?? 70.0;
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder:
+            (context) => CameraScreen(
+              camera: cameras.first,
+              userHeight: height,
+              userWeight: weight,
+            ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +89,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       height: 24,
                     ),
                     onPressed: () {
-                      // Handle settings
+                      Navigator.pushNamed(context, '/settings');
                     },
                   ),
                 ],
@@ -84,9 +106,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         subtitle: 'Measure with Your Camera',
                         color: const Color(0xFF7B68EE),
                         icon: 'diaphragm.png',
-                        onTap: () {
-                          // Handle scan
-                        },
+                        onTap: _navigateToCamera,
                       ),
                       const SizedBox(height: 16),
                       // My Measurements Card
@@ -178,7 +198,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 color: Colors.transparent,
                 child: InkWell(
                   onTap: () {
-                    // Handle scan action
+                    _navigateToCamera();
                   },
                   borderRadius: BorderRadius.circular(30),
                   child: Container(
